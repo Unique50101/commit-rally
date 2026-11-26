@@ -1,0 +1,33 @@
+name: Commit Rally
+description: Turn a GitHub contribution calendar into a playable rally circuit with shareable ghost laps.
+author: Unique50101
+branding:
+  icon: flag
+  color: green
+inputs:
+  username:
+    description: Individual GitHub login whose contribution calendar shapes the track.
+    default: ${{ github.repository_owner }}
+  token:
+    description: GitHub token for the contribution calendar query.
+    default: ${{ github.token }}
+  output-dir:
+    description: New workspace subdirectory for the static site and preview.
+    default: rally-site
+outputs:
+  directory:
+    description: Generated site directory relative to the workspace.
+    value: ${{ steps.build.outputs.directory }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+    - id: build
+      shell: bash
+      env:
+        RALLY_USER: ${{ inputs.username }}
+        RALLY_TOKEN: ${{ inputs.token }}
+        RALLY_OUTPUT: ${{ inputs.output-dir }}
+      run: node "$GITHUB_ACTION_PATH/build.mjs"
